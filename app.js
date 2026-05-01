@@ -12,7 +12,8 @@ const listingProfile = {
   },
   integrations: {
     formspreeEndpoint: "https://formspree.io/f/xeenqnpk",
-    customDomain: "https://yourealtorkass.com"
+    customDomain: "https://yourealtorkass.com",
+    googleAnalyticsId: "PASTE_GA4_MEASUREMENT_ID"
   },
   brand: {
     monogram: "K",
@@ -211,6 +212,33 @@ const moneyFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0
 });
 
+function isAnalyticsConfigured() {
+  return /^G-[A-Z0-9]+$/i.test(listingProfile.integrations.googleAnalyticsId);
+}
+
+function initializeAnalytics() {
+  if (!isAnalyticsConfigured()) return;
+
+  const gaId = listingProfile.integrations.googleAnalyticsId;
+  const gaScript = document.createElement("script");
+  gaScript.async = true;
+  gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`;
+  document.head.appendChild(gaScript);
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments);
+  };
+
+  window.gtag("js", new Date());
+  window.gtag("config", gaId);
+}
+
+function trackEvent(name, params = {}) {
+  if (!isAnalyticsConfigured() || typeof window.gtag !== "function") return;
+  window.gtag("event", name, params);
+}
+
 function setText(id, value) {
   const node = document.getElementById(id);
   if (node) node.textContent = value;
@@ -344,6 +372,35 @@ function hydrateTrackingFields() {
   });
 
   return tracking;
+}
+
+function initializeCtaTracking() {
+  const trackedClicks = [
+    { id: "heroPrimaryCta", event: "cta_click", label: "hero_primary_buyer_pack" },
+    { id: "heroSecondaryCta", event: "cta_click", label: "hero_secondary_payment" },
+    { id: "downloadGuideTop", event: "buyer_pack_preview_click", label: "buyer_pack_preview" },
+    { id: "returnToListingLink", event: "cta_click", label: "thank_you_return_to_listing" },
+    { id: "calculatorReviewLink", event: "cta_click", label: "thank_you_review_payment" },
+    { id: "thankYouEmailLink", event: "cta_click", label: "thank_you_email_agent" },
+    { id: "downloadBuyerPackAgain", event: "buyer_pack_backup_download_click", label: "thank_you_backup_download" }
+  ];
+
+  trackedClicks.forEach(({ id, event, label }) => {
+    const node = document.getElementById(id);
+    if (!node) return;
+
+    node.addEventListener("click", () => {
+      const tracking = getTrackingParams();
+      trackEvent(event, {
+        cta_label: label,
+        page_type: document.body.dataset.page || "landing",
+        source: tracking.source || "Open House Landing Page",
+        utm_source: tracking.utm_source || "(none)",
+        utm_medium: tracking.utm_medium || "(none)",
+        utm_campaign: tracking.utm_campaign || "(none)"
+      });
+    });
+  });
 }
 
 function injectLandingContent() {
@@ -631,6 +688,15 @@ async function handleLeadSubmit(event) {
     setFormStatus("Request received. Watch your email and continue to the next step...", "success");
     if (successNode) successNode.textContent = listingProfile.form.successMessage;
 
+    trackEvent("lead_submit_success", {
+      buyer_type: lead.buyerType || "(not set)",
+      timeline: lead.timeline || "(not set)",
+      source: tracking.source || "Open House Landing Page",
+      utm_source: tracking.utm_source || "(none)",
+      utm_medium: tracking.utm_medium || "(none)",
+      utm_campaign: tracking.utm_campaign || "(none)"
+    });
+
     storeLatestLead({
       lead,
       payload,
@@ -822,6 +888,9 @@ function initializeThankYouPage() {
 
 function initializePage() {
   const pageType = document.body.dataset.page || "landing";
+
+  initializeAnalytics();
+  initializeCtaTracking();
 
   if (pageType === "landing") {
     injectLandingContent();
