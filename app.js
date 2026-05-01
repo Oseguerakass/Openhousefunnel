@@ -135,7 +135,7 @@ const listingProfile = {
     submitLabel: "Send Me the Buyer Pack",
     privacyLine:
       "By submitting, you agree to be contacted about this property and related home-buying resources. No spam - just helpful follow-up.",
-    successMessage: "Buyer Pack delivered. Your info has been saved for follow-up."
+    successMessage: "Buyer Pack request received. Check your email for follow-up from Kassandra."
   },
   agent: {
     eyebrow: "Why work with me",
@@ -183,15 +183,15 @@ const listingProfile = {
     returnToListingLabel: "Back To The Listing",
     emailCtaLabel: "Email Kassandra",
     calculatorCtaLabel: "Review Payment Scenarios",
-    buyerPackCtaLabel: "Download Buyer Pack Again",
+    buyerPackCtaLabel: "Download Buyer Pack Backup",
     thankYouEyebrow: "Buyer Pack Requested",
     thankYouHeadline: "You are officially on the list for the open house.",
     thankYouBody:
-      "Your Buyer Pack request is in. Use the next steps below to stay organized, review the numbers, and make the most of your visit.",
+      "Your Buyer Pack request is in. Kassandra can follow up by email, and you can use the next steps below to stay organized, review the numbers, and make the most of your visit.",
     nextSteps: [
       {
         title: "Check your inbox",
-        body: "We have your inquiry, and Kassandra can now follow up with property-specific answers and next-step guidance."
+        body: "We have your inquiry, and Kassandra can now follow up by email with property-specific answers and next-step guidance."
       },
       {
         title: "Review the numbers",
@@ -628,7 +628,7 @@ async function handleLeadSubmit(event) {
       lead.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "buyer";
     const guideText = buildGuideText(lead);
 
-    setFormStatus("Request received. Sending you to the next step...", "success");
+    setFormStatus("Request received. Watch your email and continue to the next step...", "success");
     if (successNode) successNode.textContent = listingProfile.form.successMessage;
 
     storeLatestLead({
@@ -637,8 +637,6 @@ async function handleLeadSubmit(event) {
       guideText,
       buyerPackFilename: `${safeName}-buyer-pack.txt`
     });
-
-    downloadTextFile(`${safeName}-buyer-pack.txt`, guideText);
 
     window.setTimeout(() => {
       window.location.href = buildThankYouUrl(lead);

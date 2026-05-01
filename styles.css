@@ -690,6 +690,13 @@ h3 {
   color: var(--muted);
 }
 
+.thank-you-note {
+  max-width: 640px;
+  margin: -8px 0 24px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .thank-you-actions {
   display: flex;
   flex-wrap: wrap;
