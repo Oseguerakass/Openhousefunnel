@@ -1,7 +1,7 @@
 /*
   Template setup:
   For the next open house, update the listingProfile object below.
-  The rest of the page will repopulate automatically from this single source.
+  The rest of the page and thank-you funnel will repopulate automatically.
 */
 
 const listingProfile = {
@@ -176,6 +176,32 @@ const listingProfile = {
         value: "Listed at $744,900 while offering more size, newer construction, and strong remodel appeal versus nearby alternatives"
       }
     ]
+  },
+  funnel: {
+    thankYouPage: "thank-you.html",
+    sessionKey: "openhousefunnel-latest-lead",
+    returnToListingLabel: "Back To The Listing",
+    emailCtaLabel: "Email Kassandra",
+    calculatorCtaLabel: "Review Payment Scenarios",
+    buyerPackCtaLabel: "Download Buyer Pack Again",
+    thankYouEyebrow: "Buyer Pack Requested",
+    thankYouHeadline: "You are officially on the list for the open house.",
+    thankYouBody:
+      "Your Buyer Pack request is in. Use the next steps below to stay organized, review the numbers, and make the most of your visit.",
+    nextSteps: [
+      {
+        title: "Check your inbox",
+        body: "We have your inquiry, and Kassandra can now follow up with property-specific answers and next-step guidance."
+      },
+      {
+        title: "Review the numbers",
+        body: "Use the mortgage calculator and Buyer Pack together so you know what feels comfortable before the tour."
+      },
+      {
+        title: "Arrive prepared",
+        body: "Bring your questions about condition, financing, and next steps so the open house becomes a decision-making visit."
+      }
+    ]
   }
 };
 
@@ -196,9 +222,7 @@ function setSelectOptions(id, options) {
 
   const firstOption = select.querySelector("option");
   const placeholder = firstOption ? firstOption.outerHTML : '<option value="">Select one</option>';
-  select.innerHTML = `${placeholder}${options
-    .map((option) => `<option>${option}</option>`)
-    .join("")}`;
+  select.innerHTML = `${placeholder}${options.map((option) => `<option>${option}</option>`).join("")}`;
 }
 
 function renderSimpleCards(containerId, items) {
@@ -287,7 +311,42 @@ function renderSnapshotPoints(containerId, items) {
     .join("");
 }
 
-function injectTemplateContent() {
+function getTrackingParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get("utm_source") || "",
+    utm_medium: params.get("utm_medium") || "",
+    utm_campaign: params.get("utm_campaign") || "",
+    utm_content: params.get("utm_content") || "",
+    utm_term: params.get("utm_term") || "",
+    source: params.get("source") || "Open House Landing Page",
+    landingPageUrl: window.location.href,
+    referrerUrl: document.referrer || ""
+  };
+}
+
+function hydrateTrackingFields() {
+  const tracking = getTrackingParams();
+  const mappings = {
+    formSourceInput: tracking.source,
+    formReferrerInput: tracking.referrerUrl,
+    formLandingPageInput: tracking.landingPageUrl,
+    formUtmSourceInput: tracking.utm_source,
+    formUtmMediumInput: tracking.utm_medium,
+    formUtmCampaignInput: tracking.utm_campaign,
+    formUtmContentInput: tracking.utm_content,
+    formUtmTermInput: tracking.utm_term
+  };
+
+  Object.entries(mappings).forEach(([id, value]) => {
+    const node = document.getElementById(id);
+    if (node) node.value = value;
+  });
+
+  return tracking;
+}
+
+function injectLandingContent() {
   document.title = listingProfile.site.title;
 
   const metaDescription = document.getElementById("metaDescription");
@@ -336,20 +395,12 @@ function injectTemplateContent() {
   setText("formIntro", listingProfile.form.intro);
   setText("formSubcopy", listingProfile.form.subcopy);
   setText("formFootnote", listingProfile.form.privacyLine);
-  document.querySelector('#lead-form button[type="submit"]').textContent = listingProfile.form.submitLabel;
-  document.getElementById("notesInput").setAttribute("placeholder", listingProfile.form.notesPlaceholder);
-  document.getElementById("formPropertyInput").value = listingProfile.event.address;
-  document.getElementById("formEventDateInput").value = listingProfile.event.dateLabel;
-  document.getElementById("formEventTimeInput").value = listingProfile.event.timeLabel;
-  document.getElementById("formListingPriceInput").value = listingProfile.event.priceLabel;
-  setSelectOptions("buyerTypeInput", listingProfile.form.buyerTypes);
-  setSelectOptions("timelineInput", listingProfile.form.timelines);
 
-  const headshot = document.getElementById("agentHeadshot");
-  if (headshot) {
-    headshot.src = listingProfile.brand.headshotSrc;
-    headshot.alt = listingProfile.brand.headshotAlt;
-  }
+  const submitButton = document.querySelector('#lead-form button[type="submit"]');
+  if (submitButton) submitButton.textContent = listingProfile.form.submitLabel;
+
+  const notesInput = document.getElementById("notesInput");
+  if (notesInput) notesInput.setAttribute("placeholder", listingProfile.form.notesPlaceholder);
 
   setText("agentNameCard", listingProfile.brand.agentName);
   setText("agentLicenseCard", listingProfile.brand.licenseLabel);
@@ -364,12 +415,34 @@ function injectTemplateContent() {
   setText("snapshotBody", listingProfile.snapshot.body);
   renderSnapshotPoints("snapshotPoints", listingProfile.snapshot.points);
 
+  const headshot = document.getElementById("agentHeadshot");
+  if (headshot) {
+    headshot.src = listingProfile.brand.headshotSrc;
+    headshot.alt = listingProfile.brand.headshotAlt;
+  }
+
   const videoSource = document.getElementById("heroVideoSource");
   const video = document.getElementById("heroVideo");
   if (videoSource && video) {
     videoSource.src = listingProfile.media.heroVideoSrc;
     video.load();
   }
+
+  const hiddenFields = {
+    formPropertyInput: listingProfile.event.address,
+    formEventDateInput: listingProfile.event.dateLabel,
+    formEventTimeInput: listingProfile.event.timeLabel,
+    formListingPriceInput: listingProfile.event.priceLabel
+  };
+
+  Object.entries(hiddenFields).forEach(([id, value]) => {
+    const node = document.getElementById(id);
+    if (node) node.value = value;
+  });
+
+  setSelectOptions("buyerTypeInput", listingProfile.form.buyerTypes);
+  setSelectOptions("timelineInput", listingProfile.form.timelines);
+  hydrateTrackingFields();
 }
 
 function updateCountdown() {
@@ -466,6 +539,35 @@ function setFormStatus(message, type = "neutral") {
   statusNode.dataset.state = type;
 }
 
+function sanitizeFirstName(fullName) {
+  return (fullName || "").trim().split(/\s+/)[0] || "there";
+}
+
+function storeLatestLead(payload) {
+  sessionStorage.setItem(listingProfile.funnel.sessionKey, JSON.stringify(payload));
+}
+
+function getLatestLead() {
+  const stored = sessionStorage.getItem(listingProfile.funnel.sessionKey);
+  if (!stored) return null;
+
+  try {
+    return JSON.parse(stored);
+  } catch {
+    return null;
+  }
+}
+
+function buildThankYouUrl(lead) {
+  const params = new URLSearchParams({
+    name: sanitizeFirstName(lead.name),
+    timeline: lead.timeline || "",
+    type: lead.buyerType || ""
+  });
+
+  return `${listingProfile.funnel.thankYouPage}?${params.toString()}`;
+}
+
 async function handleLeadSubmit(event) {
   event.preventDefault();
 
@@ -478,6 +580,7 @@ async function handleLeadSubmit(event) {
     return;
   }
 
+  const tracking = hydrateTrackingFields();
   const lead = {
     name: form.name.value.trim(),
     email: form.email.value.trim(),
@@ -496,7 +599,7 @@ async function handleLeadSubmit(event) {
     listingPrice: listingProfile.event.priceLabel,
     hostedBy: listingProfile.brand.agentName,
     agentEmail: listingProfile.brand.email,
-    source: "Open House Landing Page"
+    ...tracking
   };
 
   if (submitButton) {
@@ -521,23 +624,30 @@ async function handleLeadSubmit(event) {
       throw new Error(`Form submit failed with status ${response.status}`);
     }
 
-    setFormStatus("Request received. Check your email for follow-up from Kassandra.", "success");
-
-    if (successNode) {
-      successNode.textContent = listingProfile.form.successMessage;
-    }
-
     const safeName =
       lead.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "buyer";
-    downloadTextFile(`${safeName}-buyer-pack.txt`, buildGuideText(lead));
+    const guideText = buildGuideText(lead);
 
-    form.reset();
-    document.getElementById("formPropertyInput").value = listingProfile.event.address;
-    document.getElementById("formEventDateInput").value = listingProfile.event.dateLabel;
-    document.getElementById("formEventTimeInput").value = listingProfile.event.timeLabel;
-    document.getElementById("formListingPriceInput").value = listingProfile.event.priceLabel;
+    setFormStatus("Request received. Sending you to the next step...", "success");
+    if (successNode) successNode.textContent = listingProfile.form.successMessage;
+
+    storeLatestLead({
+      lead,
+      payload,
+      guideText,
+      buyerPackFilename: `${safeName}-buyer-pack.txt`
+    });
+
+    downloadTextFile(`${safeName}-buyer-pack.txt`, guideText);
+
+    window.setTimeout(() => {
+      window.location.href = buildThankYouUrl(lead);
+    }, 500);
   } catch (error) {
-    setFormStatus("The form could not send right now. Please try again in a moment or contact Kassandra directly.", "error");
+    setFormStatus(
+      "The form could not send right now. Please try again in a moment or contact Kassandra directly.",
+      "error"
+    );
     if (successNode) successNode.textContent = "";
     console.error(error);
   } finally {
@@ -630,17 +740,111 @@ function initializeMortgageCalculator() {
   updateMortgage();
 }
 
-injectTemplateContent();
-updateCountdown();
-initializeMortgageCalculator();
-setInterval(updateCountdown, 60000);
+function initializeThankYouPage() {
+  const latestLead = getLatestLead();
+  const params = new URLSearchParams(window.location.search);
+  const firstName = params.get("name") || sanitizeFirstName(latestLead?.lead?.name);
+  const timeline = params.get("timeline") || latestLead?.lead?.timeline || "your timeline";
+  const buyerType = params.get("type") || latestLead?.lead?.buyerType || "buyer";
+  const personalizedHeadline =
+    firstName && firstName.toLowerCase() !== "there"
+      ? `${firstName}, ${listingProfile.funnel.thankYouHeadline}`
+      : listingProfile.funnel.thankYouHeadline;
 
-const leadForm = document.getElementById("lead-form");
-if (leadForm) {
-  leadForm.addEventListener("submit", handleLeadSubmit);
+  document.title = `Thank You | ${listingProfile.brand.agentName}`;
+
+  setText("thankYouAgentName", listingProfile.brand.agentName);
+  setText("thankYouAgentEmail", listingProfile.brand.email);
+  setText("thankYouAgentNameFooter", listingProfile.brand.agentName);
+  setText("thankYouEyebrow", listingProfile.funnel.thankYouEyebrow);
+  setText("thankYouHeadline", personalizedHeadline);
+  setText("thankYouBody", listingProfile.funnel.thankYouBody);
+  setText("thankYouAddress", listingProfile.event.address);
+  setText("thankYouDate", listingProfile.event.dateLabel);
+  setText("thankYouTime", listingProfile.event.timeLabel);
+  setText("thankYouPrice", listingProfile.event.priceLabel);
+  setText("thankYouTimeline", timeline);
+  setText("thankYouBuyerType", buyerType);
+  setText("thankYouFooterLine", listingProfile.brand.footerLine);
+  setText("returnToListingLabel", listingProfile.funnel.returnToListingLabel);
+  setText("emailCtaLabel", listingProfile.funnel.emailCtaLabel);
+  setText("calculatorCtaLabel", listingProfile.funnel.calculatorCtaLabel);
+  setText("buyerPackCtaLabel", listingProfile.funnel.buyerPackCtaLabel);
+
+  const brandMonogram = document.querySelector(".brand-monogram");
+  if (brandMonogram) brandMonogram.textContent = listingProfile.brand.monogram;
+
+  const emailLink = document.getElementById("thankYouEmailLink");
+  if (emailLink) {
+    emailLink.href = `mailto:${listingProfile.brand.email}?subject=${encodeURIComponent(
+      `Open House Follow-Up: ${listingProfile.event.address}`
+    )}`;
+  }
+
+  const returnLink = document.getElementById("returnToListingLink");
+  if (returnLink) {
+    returnLink.href = `${listingProfile.integrations.customDomain}/`;
+  }
+
+  const calculatorLink = document.getElementById("calculatorReviewLink");
+  if (calculatorLink) {
+    calculatorLink.href = `${listingProfile.integrations.customDomain}/#calculator`;
+  }
+
+  const nextSteps = document.getElementById("thankYouSteps");
+  if (nextSteps) {
+    nextSteps.innerHTML = listingProfile.funnel.nextSteps
+      .map(
+        (item) => `
+          <article class="feature-card">
+            <h3>${item.title}</h3>
+            <p>${item.body}</p>
+          </article>
+        `
+      )
+      .join("");
+  }
+
+  const downloadAgainButton = document.getElementById("downloadBuyerPackAgain");
+  if (downloadAgainButton) {
+    downloadAgainButton.addEventListener("click", () => {
+      if (latestLead?.guideText && latestLead?.buyerPackFilename) {
+        downloadTextFile(latestLead.buyerPackFilename, latestLead.guideText);
+        return;
+      }
+
+      const fallbackLead = {
+        name: latestLead?.lead?.name || firstName || "Guest Buyer",
+        timeline: latestLead?.lead?.timeline || timeline || "30 to 90 days"
+      };
+      downloadTextFile("buyer-pack.txt", buildGuideText(fallbackLead));
+    });
+  }
 }
 
-const previewButton = document.getElementById("downloadGuideTop");
-if (previewButton) {
-  previewButton.addEventListener("click", previewGuide);
+function initializePage() {
+  const pageType = document.body.dataset.page || "landing";
+
+  if (pageType === "landing") {
+    injectLandingContent();
+    updateCountdown();
+    initializeMortgageCalculator();
+    window.setInterval(updateCountdown, 60000);
+
+    const leadForm = document.getElementById("lead-form");
+    if (leadForm) {
+      leadForm.addEventListener("submit", handleLeadSubmit);
+    }
+
+    const previewButton = document.getElementById("downloadGuideTop");
+    if (previewButton) {
+      previewButton.addEventListener("click", previewGuide);
+    }
+  }
+
+  if (pageType === "thank-you") {
+    initializeThankYouPage();
+  }
 }
+
+initializePage();
