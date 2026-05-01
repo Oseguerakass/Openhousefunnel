@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Open House Buyer Preview</title>
+    <meta
+      id="metaDescription"
+      name="description"
+      content="Tour the home, request the Buyer Pack, and get local insights, pricing guidance, and next-step support before you make an offer."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Open house landing page">
+        <span class="brand-monogram">K</span>
+        <span class="brand-copy">
+          <strong id="agentNameNav">[Your Name]</strong>
+          <small id="agentEmailNav">your@email.com</small>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#tour">Property</a>
+        <a href="#buyer-pack">Buyer Pack</a>
+        <a href="#agent">Why Work With Me</a>
+      </nav>
+      <a class="button button-ink" href="#lead-form">Reserve Your Tour</a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-media">
+          <video
+            id="heroVideo"
+            class="hero-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            controls
+            aria-label="Listing video tour"
+          >
+            <source id="heroVideoSource" src="assets/listing-featured.mp4" type="video/mp4">
+          </video>
+          <div class="hero-overlay"></div>
+          <div class="hero-card">
+            <p class="eyebrow" id="heroEyebrow">Open house</p>
+            <p class="hero-copy" id="propertySubhead">
+              Get the Buyer Pack before your visit so you can compare the home, understand the estimated payment, review financing options, and know what to look for during the tour.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-accent" id="heroPrimaryCta" href="#lead-form">Get The Free Buyer Pack</a>
+              <a class="button button-light" id="heroSecondaryCta" href="#calculator">Estimate Monthly Payment</a>
+            </div>
+            <div class="hero-trust" id="heroTrustChips">
+              <span>Trust chip</span>
+            </div>
+          </div>
+        </div>
+        <aside class="event-panel">
+          <p class="eyebrow">Event details</p>
+          <h2 id="propertyAddress">Property address</h2>
+          <div class="event-grid">
+            <div>
+              <span>Date</span>
+              <strong id="eventDate">May 2 & 3, 2026</strong>
+            </div>
+            <div>
+              <span>Time</span>
+              <strong id="eventTime">11:00 AM to 3:00 PM</strong>
+            </div>
+            <div>
+              <span>Price</span>
+              <strong id="listingPrice">$0</strong>
+            </div>
+            <div>
+              <span>Highlights</span>
+              <strong id="propertyStats">3 beds, 2 full baths, 1,360 sq ft, 7,200 sq ft lot</strong>
+            </div>
+          </div>
+          <div class="countdown-card">
+            <span>Open house begins in</span>
+            <strong id="countdownText">Updating...</strong>
+          </div>
+          <p class="event-note" id="eventNote">Event note</p>
+        </aside>
+      </section>
+
+      <section class="metrics-band" id="valueCards" aria-label="Value points">
+        <div>
+          <strong>Value card</strong>
+          <span>Value card copy</span>
+        </div>
+      </section>
+
+      <section class="section calculator-section" id="calculator">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Payment Preview</p>
+            <h2>Know the estimated monthly payment before you fall in love with the home.</h2>
+            <p class="section-copy">
+              Use the calculator to estimate principal, interest, taxes, insurance, and possible HOA costs. This is not a loan quote, but it gives you a clearer starting point before speaking with a lender.
+            </p>
+          </div>
+        </div>
+
+        <div class="calculator-layout">
+          <form class="calculator-form" id="mortgageForm">
+            <h3 class="calculator-title">Mortgage Calculator</h3>
+            <label>
+              Home price
+              <input id="calcPrice" type="number" min="0" step="1000">
+            </label>
+            <label>
+              Down payment
+              <input id="calcDown" type="number" min="0" step="1000">
+            </label>
+            <label>
+              Interest rate
+              <input id="calcRate" type="number" min="0" max="20" step="0.01">
+            </label>
+            <label>
+              Loan term
+              <select id="calcTerm">
+                <option value="30">30 years</option>
+                <option value="20">20 years</option>
+                <option value="15">15 years</option>
+                <option value="10">10 years</option>
+              </select>
+            </label>
+            <label>
+              Annual property tax
+              <input id="calcTax" type="number" min="0" step="100">
+            </label>
+            <label>
+              Annual insurance
+              <input id="calcInsurance" type="number" min="0" step="50">
+            </label>
+            <label>
+              Monthly HOA
+              <input id="calcHoa" type="number" min="0" step="25" value="0">
+            </label>
+          </form>
+
+          <div class="calculator-panel">
+            <p class="eyebrow">Estimated payment</p>
+            <div class="payment-total" id="paymentTotal">$0/mo</div>
+            <p class="payment-caption">Principal, interest, taxes, insurance, and HOA</p>
+            <p class="payment-disclaimer">
+              Estimates are for educational purposes only. Final payment depends on credit, loan program, rate, taxes, insurance, HOA, and lender approval.
+            </p>
+
+            <div class="payment-grid">
+              <div>
+                <span>Loan amount</span>
+                <strong id="loanAmountValue">$0</strong>
+              </div>
+              <div>
+                <span>Principal + interest</span>
+                <strong id="principalInterestValue">$0/mo</strong>
+              </div>
+              <div>
+                <span>Taxes</span>
+                <strong id="taxValue">$0/mo</strong>
+              </div>
+              <div>
+                <span>Insurance</span>
+                <strong id="insuranceValue">$0/mo</strong>
+              </div>
+              <div>
+                <span>HOA</span>
+                <strong id="hoaValue">$0/mo</strong>
+              </div>
+              <div>
+                <span>Down payment</span>
+                <strong id="downPaymentValue">$0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section split-section property-description" id="tour">
+        <div>
+          <p class="eyebrow" id="propertyDescriptionEyebrow">Property Description</p>
+          <h2 id="propertyDescriptionHeadline">Property headline</h2>
+        </div>
+        <div class="copy-stack" id="propertyDescriptionBody">
+          <p>Property description paragraph</p>
+        </div>
+      </section>
+
+      <section class="section preview-grid" id="journeyCards">
+        <article class="feature-card">
+          <span class="feature-kicker">01</span>
+          <h3>Before The Visit</h3>
+          <p>Journey card copy</p>
+        </article>
+      </section>
+
+      <section class="section lead-section" id="buyer-pack">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow" id="buyerPackEyebrow">Free Buyer Resource</p>
+            <h2 id="buyerPackHeadline">Get the Buyer Pack before you tour.</h2>
+            <p class="section-copy" id="buyerPackSubheadline">
+              A simple, mobile-friendly guide to help you tour with clarity, ask better questions, understand financing basics, and evaluate whether this home fits your next move.
+            </p>
+          </div>
+          <button class="button button-outline" id="downloadGuideTop" type="button">Preview The Guide</button>
+        </div>
+
+        <div class="lead-layout">
+          <div class="guide-preview">
+            <div class="guide-shell">
+              <div class="guide-header">
+                <span>Buyer Pack Preview</span>
+                <span id="guidePropertyLabel">For the featured home</span>
+              </div>
+              <h3 id="guidePreviewHeading">What buyers receive</h3>
+              <ul class="guide-list" id="guideList">
+                <li>Buyer Pack item</li>
+              </ul>
+              <div class="guide-tags" id="guideTags">
+                <span>Guide tag</span>
+              </div>
+            </div>
+          </div>
+
+          <form class="lead-form" id="lead-form" novalidate>
+            <p class="form-intro" id="formIntro">Reserve your open house visit and get the free Buyer Pack instantly.</p>
+            <p class="form-subcopy" id="formSubcopy">
+              No pressure. This helps us send you the guide, answer property questions, and understand what would be most helpful before your visit.
+            </p>
+            <input id="formPropertyInput" name="propertyAddress" type="hidden" value="">
+            <input id="formEventDateInput" name="openHouseDate" type="hidden" value="">
+            <input id="formEventTimeInput" name="openHouseTime" type="hidden" value="">
+            <input id="formListingPriceInput" name="listingPrice" type="hidden" value="">
+            <label>
+              Full name
+              <input id="nameInput" name="name" type="text" placeholder="Your name" required>
+            </label>
+            <label>
+              Email
+              <input id="emailInput" name="email" type="email" placeholder="Where should we send the Buyer Pack?" required>
+            </label>
+            <label>
+              Mobile number
+              <input id="phoneInput" name="phone" type="tel" placeholder="Best number for property updates" required>
+            </label>
+            <label>
+              What best describes you?
+              <select id="buyerTypeInput" name="buyerType" required>
+                <option value="">Select one</option>
+                <option>First-time buyer</option>
+                <option>Move-up buyer</option>
+                <option>Investor</option>
+                <option>Relocating buyer</option>
+                <option>Just exploring</option>
+                <option>Agent representing a buyer</option>
+              </select>
+            </label>
+            <label>
+              Ideal timeline
+              <select id="timelineInput" name="timeline" required>
+                <option value="">Select one</option>
+                <option>Ready now</option>
+                <option>1–3 months</option>
+                <option>3 to 6 months</option>
+                <option>6–12 months</option>
+                <option>Not sure yet</option>
+              </select>
+            </label>
+            <label>
+              What would be most helpful?
+              <textarea
+                id="notesInput"
+                name="notes"
+                rows="4"
+                placeholder="Tell me what you want help with: payment estimate, financing options, comparing this home, escrow timeline, or deciding if this property is a good fit."
+              ></textarea>
+            </label>
+            <button class="button button-accent button-block" type="submit">Send Me the Buyer Pack</button>
+            <p class="form-footnote" id="formFootnote">
+              By submitting, you agree to be contacted about this property and related home-buying resources. No spam — just helpful follow-up.
+            </p>
+            <p class="form-status" id="formStatus" aria-live="polite"></p>
+            <p class="success-message" id="formSuccess" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="section agent-section" id="agent">
+        <div class="agent-copy">
+          <div class="agent-profile">
+            <img class="agent-headshot" id="agentHeadshot" src="assets/kassandra-headshot-display.jpg" alt="Agent headshot">
+            <div class="agent-identity">
+              <strong id="agentNameCard">Agent Name</strong>
+              <span id="agentLicenseCard">Realtor | DRE #00000000</span>
+              <small id="agentBrokerageCard">Brokerage</small>
+            </div>
+          </div>
+          <p class="eyebrow" id="agentEyebrow">Why work with me</p>
+          <h2 id="agentHeadline">Get clear guidance before, during, and after the open house.</h2>
+          <p id="agentBio">
+            I help buyers make confident real estate decisions by combining property education, payment awareness, financing guidance, and local market context. For this open house, I’m helping buyers understand not just the home itself, but the full picture: monthly payment, financing fit, offer strategy, neighborhood value, and long-term ownership potential.
+          </p>
+          <div class="agent-points" id="agentPoints">
+            <div>
+              <strong>Agent value point</strong>
+              <span>Agent value point copy.</span>
+            </div>
+          </div>
+        </div>
+        <div class="seller-proof">
+          <p class="eyebrow" id="snapshotEyebrow">Buyer Snapshot</p>
+          <h3 id="snapshotHeadline">What buyers usually want to know before they decide to tour or write.</h3>
+          <p id="snapshotBody">Buyer snapshot body.</p>
+          <div class="proof-grid" id="snapshotPoints">
+            <div>
+              <span>Snapshot point</span>
+              <strong>Snapshot point copy</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong id="agentNameFooter">[Your Name]</strong>
+        <p id="footerLine">Agent footer line</p>
+      </div>
+      <div class="footer-actions">
+        <a href="#lead-form">Reserve Your Tour</a>
+        <a href="#agent">Meet Your Host</a>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

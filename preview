@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+PORT="${1:-8000}"
+
+echo "Previewing on http://localhost:${PORT}"
+exec python3 -m http.server "${PORT}"
