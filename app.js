@@ -13,6 +13,7 @@ const listingProfile = {
   integrations: {
     formspreeEndpoint: "https://formspree.io/f/xeenqnpk",
     customDomain: "https://yourealtorkass.com"
+      googleAnalyticsId: "G-4E24XVBM1T"
   },
   brand: {
     monogram: "K",
